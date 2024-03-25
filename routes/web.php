@@ -3,6 +3,8 @@
 use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +31,7 @@ Route::middleware([
         'is_admin',
     ])->group(function () {
     Route::resource('user', UserController::class);
-    Route::resource('product', \App\Http\Controllers\ProductController::class);
+    Route::resource('product', ProductController::class);
+    Route::resource('order', OrderController::class);
     });
-
 });

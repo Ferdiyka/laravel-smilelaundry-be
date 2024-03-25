@@ -60,15 +60,9 @@
                             </div>
                             <div class="form-group">
                                 <label>Photo Product</label>
-                                <div class="col-sm-9">
-                                    <input type="file" class="form-control" name="picture" required
-                                        @error('picture') is-invalid @enderror>
+                                <div>
+                                    <input type="file" class="form-control" name="picture" value="{{ $product->note }}">
                                 </div>
-                                @error('picture')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
                         </div>
                         <div class="card-footer text-right">

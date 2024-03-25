@@ -52,6 +52,7 @@
 
                                             <th>Name</th>
                                             <th>Address</th>
+                                            <th>Note</th>
                                             <th>Phone</th>
                                             <th>Radius</th>
                                             <th>Latitude</th>
@@ -66,6 +67,9 @@
                                                 </td>
                                                 <td>
                                                     {{ $user->address }}
+                                                </td>
+                                                <td>
+                                                    {{ $user->note_address }}
                                                 </td>
                                                 <td>
                                                     {{ $user->phone }}

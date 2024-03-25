@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
             'phone' => '0813-8907-3557',
             'roles' => 'ADMIN',
             'address' => 'Jalan Inpres 4 RT 02 RW 06 Larangan Utara, RT.001/RW.006, Larangan Utara, Kec. Larangan, Kota Tangerang, Banten 15154',
+            'note_address' => 'Seberang gang SMAN 12',
             'radius' => '1',
             'latitude_user' => '-6.23428056838952',
             'longitude_user' => '106.72582289599362',

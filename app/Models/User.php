@@ -24,6 +24,7 @@ class User extends Authenticatable
         'phone',
         'roles',
         'address',
+        'note_address',
         'radius',
         'latitude_user',
         'longitude_user',

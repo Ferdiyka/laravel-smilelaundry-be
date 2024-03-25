@@ -78,6 +78,10 @@
                                 <label>Address</label>
                                 <textarea type="text" class="form-control" data-height="150" name="address"></textarea>
                             </div>
+                            <div class="form-group mb-0">
+                                <label>Note</label>
+                                <input type="text" class="form-control" name="note_address">
+                            </div>
                             <div class="form-group">
                                 <label>Phone</label>
                                 <input type="text" class="form-control" name="phone">

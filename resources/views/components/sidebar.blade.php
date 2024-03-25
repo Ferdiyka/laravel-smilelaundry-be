@@ -19,6 +19,10 @@
                 <a href="{{ route('product.index') }}" class="nav-link"><i class="fas fa-columns"></i><span>Product</span>
                 </a>
             </li>
+            <li class="nav-item dropdown ">
+                <a href="{{ route('order.index') }}" class="nav-link"><i class="far fa-file-alt"></i><span>Order</span>
+                </a>
+            </li>
             {{-- <li class="menu-header">Dashboard</li>
             <li class="nav-item dropdown">
                 <a href="#"
