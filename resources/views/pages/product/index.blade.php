@@ -49,7 +49,6 @@
                                 <div class="table-responsive">
                                     <table class="table-striped table">
                                         <tr>
-
                                             <th>Name</th>
                                             <th>Price</th>
                                             <th>Duration</th>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
+use App\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -23,6 +25,14 @@ class OrderController extends Controller
         })
         ->paginate(5);
         return view('pages.order.index', ['orders' => $orders, 'keyword' => $keyword]);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Order $order)
+    {
+        //
     }
 
     public function edit($id)
@@ -61,11 +71,34 @@ class OrderController extends Controller
     return redirect()->route('order.index')->with('success', 'Order updated successfully');
 }
 
+public function updateStatus(Request $request, Order $order)
+{
+    $order->update([
+        'order_status' => $request->input('order_status'),
+    ]);
+
+    return redirect()->route('order.index')->with('success', 'Order status updated successfully.');
+}
+
+public function updatePaymentStatus(Request $request, Order $order)
+{
+    $order->update([
+        'payment_status' => $request->input('payment_status'),
+    ]);
+
+    return redirect()->route('order.index')->with('success', 'Payment status updated successfully.');
+}
+
     public function destroy($id)
     {
         $order = Order::findOrFail($id);
         $order->delete();
 
         return redirect()->route('order.index')->with('success', 'Product deleted successfully');
+    }
+
+    public function exportOrders()
+    {
+        return Excel::download(new OrdersExport, 'orders.xlsx');
     }
 }

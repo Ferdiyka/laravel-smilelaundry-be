@@ -28,6 +28,11 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
+                                <div class="float-left">
+                                    <a href="{{ route('orders.export') }}" class="btn btn-success">
+                                        <i class="fas fa-download"></i> Download Excel
+                                    </a>
+                                </div>
                                 <div class="float-right">
                                     <form method="GET" action="{{ route('order.index') }}">
                                         <div class="input-group">
@@ -42,17 +47,17 @@
                                 <div class="clearfix mb-3"></div>
 
                                 <div class="table-responsive">
-                                    <table class="table-striped table">
+                                    <table class="table-bordered table">
                                         <tr>
-                                            <th>Order Id</th>
+                                            <th>Id</th>
                                             <th>User Name</th>
                                             <th>Address</th>
                                             <th>Note Address</th>
                                             <th>Jasa</th>
-                                            <th>Quantity</th>
-                                            <th>Order Date</th>
+                                            <th>Jumlah</th>
                                             <th>Order Status</th>
                                             <th>Payment Status</th>
+                                            <th>Order Date</th>
                                             <th>Action</th>
                                         </tr>
                                         @if ($orders !== null)
@@ -70,14 +75,24 @@
                                                                 {{ $order->user->note_address }}</td>
                                                         @endif
                                                         <td>{{ $item->product->name }}</td>
-                                                        <td>{{ $item->quantity }}</td>
+                                                        <td>
+                                                            @if (in_array($item->product->name, ['Reguler', 'Express']))
+                                                                {{ $item->quantity }} Kg
+                                                            @else
+                                                                {{ $item->quantity }}
+                                                            @endif
+                                                        </td>
                                                         @if ($key == 0)
                                                             <td rowspan="{{ count($order->orderDetails) }}">
+                                                                <a href="#" data-toggle="modal"
+                                                                    data-target="#orderStatusModal-{{ $order->id }}">{{ $order->order_status }}</a>
+                                                            </td>
+                                                            <td rowspan="{{ count($order->orderDetails) }}">
+                                                                <a href="#" data-toggle="modal"
+                                                                    data-target="#paymentStatusModal-{{ $order->id }}">{{ $order->payment_status }}</a>
+                                                            </td>
+                                                            <td rowspan="{{ count($order->orderDetails) }}">
                                                                 {{ $order->order_date }}</td>
-                                                            <td rowspan="{{ count($order->orderDetails) }}">
-                                                                {{ $order->order_status }}</td>
-                                                            <td rowspan="{{ count($order->orderDetails) }}">
-                                                                {{ $order->payment_status }}</td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 <div class="d-flex justify-content-center">
                                                                     <a href='{{ route('order.edit', $order->id) }}'
@@ -106,6 +121,98 @@
                                         @else
                                             <p>No orders found.</p>
                                         @endif
+
+                                        <!-- Order Status Modal -->
+                                        @foreach ($orders as $order)
+                                            <div class="modal fade" id="orderStatusModal-{{ $order->id }}"
+                                                tabindex="-1" role="dialog"
+                                                aria-labelledby="orderStatusModalLabel-{{ $order->id }}"
+                                                aria-hidden="true" data-backdrop="false" data-keyboard="false">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title"
+                                                            style="margin-top: 5px"
+                                                                id="orderStatusModalLabel-{{ $order->id }}">Update Order
+                                                                Status</h5>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="{{ route('order.updateStatus', $order->id) }}"
+                                                                method="POST">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <div class="form-group">
+                                                                    <select class="form-control" id="orderStatus"
+                                                                        name="order_status">
+                                                                        <option value="Pending"
+                                                                            {{ $order->order_status === 'Pending' ? 'selected' : '' }}>
+                                                                            Pending</option>
+                                                                        <option value="Processed"
+                                                                            {{ $order->order_status === 'Processed' ? 'selected' : '' }}>
+                                                                            Processed</option>
+                                                                        <option value="Shipped"
+                                                                            {{ $order->order_status === 'Shipped' ? 'selected' : '' }}>
+                                                                            Shipped</option>
+                                                                        <option value="Delivered"
+                                                                            {{ $order->order_status === 'Delivered' ? 'selected' : '' }}>
+                                                                            Delivered</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-dismiss="modal">Cancel</button>
+                                                                    <button type="submit"
+                                                                        class="btn btn-primary">Update</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+
+                                        <!-- Payment Status Modal -->
+                                        @foreach ($orders as $order)
+                                            <div class="modal fade" id="paymentStatusModal-{{ $order->id }}"
+                                                tabindex="-1" role="dialog"
+                                                aria-labelledby="paymentStatusModalLabel-{{ $order->id }}"
+                                                aria-hidden="true" data-backdrop="false" data-keyboard="false">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title"
+                                                                id="paymentStatusModalLabel-{{ $order->id }}">Update
+                                                                Payment Status</h5>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form
+                                                                action="{{ route('order.updatePaymentStatus', $order->id) }}"
+                                                                method="POST">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <div class="form-group">
+                                                                    <select class="form-control" id="paymentStatus"
+                                                                        name="payment_status">
+                                                                        <option value="Pending"
+                                                                            {{ $order->payment_status === 'Pending' ? 'selected' : '' }}>
+                                                                            Pending</option>
+                                                                        <option value="Paid"
+                                                                            {{ $order->payment_status === 'Paid' ? 'selected' : '' }}>
+                                                                            Paid</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-dismiss="modal">Cancel</button>
+                                                                    <button type="submit"
+                                                                        class="btn btn-primary">Update</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </table>
                                 </div>
                                 <div class="float-right">

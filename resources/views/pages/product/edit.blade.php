@@ -59,9 +59,12 @@
                                 <textarea type="text" class="form-control" data-height="150" name="note">{{ $product->note }}</textarea>
                             </div>
                             <div class="form-group">
-                                <label>Photo Product</label>
+                                <label>Previous Photo Product</label>
                                 <div>
-                                    <input type="file" class="form-control" name="picture" value="{{ $product->note }}">
+                                    @if ($product->picture)
+                                        <img src="{{ asset('storage/products/' . $product->picture) }}" alt="{{ $product->name }}" class="img-thumbnail mb-2" style="max-width: 200px;">
+                                    @endif
+                                    <input type="file" class="form-control" name="picture">
                                 </div>
                             </div>
                         </div>

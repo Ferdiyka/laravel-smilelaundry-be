@@ -41,13 +41,25 @@
                             @endforeach
                             <div class="form-group">
                                 <label>Order Status</label>
-                                <input type="text" class="form-control" name="order_status" required
-                                    value="{{ $order->order_status }}">
+                                <select class="form-control" id="orderStatus" name="order_status">
+                                    <option value="Pending" {{ $order->order_status === 'Pending' ? 'selected' : '' }}>
+                                        Pending</option>
+                                    <option value="Processed" {{ $order->order_status === 'Processed' ? 'selected' : '' }}>
+                                        Processed</option>
+                                    <option value="Shipped" {{ $order->order_status === 'Shipped' ? 'selected' : '' }}>
+                                        Shipped</option>
+                                    <option value="Delivered" {{ $order->order_status === 'Delivered' ? 'selected' : '' }}>
+                                        Delivered</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Payment Status</label>
-                                <input type="text" class="form-control" name="payment_status" required
-                                    value="{{ $order->payment_status }}">
+                                <select class="form-control" id="paymentStatus" name="payment_status">
+                                    <option value="Pending" {{ $order->payment_status === 'Pending' ? 'selected' : '' }}>
+                                        Pending</option>
+                                    <option value="Paid" {{ $order->payment_status === 'Paid' ? 'selected' : '' }}>
+                                        Paid</option>
+                                </select>
                             </div>
                         </div>
                         <div class="card-footer text-right">

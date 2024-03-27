@@ -33,5 +33,8 @@ Route::middleware([
     Route::resource('user', UserController::class);
     Route::resource('product', ProductController::class);
     Route::resource('order', OrderController::class);
+    Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
+    Route::put('/orders/{order}/update-payment-status', [OrderController::class, 'updatePaymentStatus'])->name('order.updatePaymentStatus');
+    Route::get('/orders/export', [OrderController::class, 'exportOrders'])->name('orders.export');
     });
 });

@@ -66,6 +66,9 @@ class ProductController extends Controller
             $request->picture->storeAs('public/products', $filename);
             $product->picture = $filename;
         }
+        else {
+            // No new picture was uploaded, keep the existing picture
+        }
 
         // Update other fields
         $product->update([
