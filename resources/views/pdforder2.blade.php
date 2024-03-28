@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Order #{{ $order->id }}</title>
     <style>
@@ -27,14 +26,11 @@
             margin-top: 20px;
         }
 
-        table,
-        th,
-        td {
+        table, th, td {
             border: 1px solid #ccc;
         }
 
-        th,
-        td {
+        th, td {
             padding: 10px;
             text-align: left;
         }
@@ -46,7 +42,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="header">
         <img src="{{ public_path('images/Logo.png') }}" class="w-1/2 mx-auto rounded-full" alt="">
@@ -81,50 +76,20 @@
             <td><strong>Payment Status:</strong></td>
             <td>{{ $order->payment_status }}</td>
         </tr>
-        <tr>
-            <td rowspan="{{ count($order->orderDetails) }}"><strong>Jasa</strong></td>
-            <td>
-                @php
-                    $totalPrice = 0;
-                    $first = true;
-                    $prevProductName = '';
-                @endphp
-                @foreach ($order->orderDetails as $item)
-                    @if ($prevProductName !== $item->product->name)
-                        @if (!$first)
-                            </td></tr><tr><td>
-                        @else
-                            @php
-                                $first = false;
-                            @endphp
-                        @endif
-                        <strong>{{ $item->product->name }}</strong> x {{ number_format($item->product->price, 0, ',', '.') }} x
+        @foreach ($order->orderDetails as $item)
+                <tr>
+                    <td>{{ $item->product->name }}</td>
+                    <td>
                         @if (in_array($item->product->name, ['Reguler', 'Express']))
                             {{ $item->quantity }} Kg
                         @else
                             {{ $item->quantity }}
                         @endif
-                        @php
-                            $prevProductName = $item->product->name;
-                            $totalPrice += $item->product->price * $item->quantity;
-                        @endphp
-                    @else
-                        <br>
-                        @if (in_array($item->product->name, ['Reguler', 'Express']))
-                            {{ $item->quantity }} Kg
-                        @else
-                            {{ $item->quantity }}
-                        @endif
-                        @php
-                            $totalPrice += $item->product->price * $item->quantity;
-                        @endphp
-                    @endif
-                @endforeach
-            </td>
-        </tr>
+                    </td>
+                </tr>
+            @endforeach
         <tr>
             <td><strong>Total Price:</strong></td>
-            <td>Rp {{ number_format($totalPrice, 0, ',', '.') }}</td>
             {{-- <td>Rp {{ number_format($booking->total_price, 0, ',', '.') }}</td> --}}
         </tr>
     </table>
@@ -136,5 +101,4 @@
         &copy; {{ date('Y') }} Smile Laundry
     </div>
 </body>
-
 </html>

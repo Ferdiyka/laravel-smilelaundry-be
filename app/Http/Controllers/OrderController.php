@@ -13,21 +13,22 @@ use Maatwebsite\Excel\Facades\Excel;
 class OrderController extends Controller
 {
     public function index(Request $request)
-    {
-        $keyword = $request->input('keyword');
-        //get orders with pagination
-        $orders = Order::with('user')
+{
+    $keyword = $request->input('keyword');
+    //get orders with pagination
+    $orders = Order::with('user')
         ->where(function ($query) use ($keyword) {
             $query
-                  ->orWhereHas('user', function ($query) use ($keyword) {
-                      $query->where('name', 'like', '%' . $keyword . '%')
-                            ->orWhere('address', 'like', '%' . $keyword . '%')
-                            ->orWhere('note_address', 'like', '%' . $keyword . '%');
-                  });
+                ->orWhereHas('user', function ($query) use ($keyword) {
+                    $query->where('name', 'like', '%' . $keyword . '%')
+                        ->orWhere('address', 'like', '%' . $keyword . '%')
+                        ->orWhere('note_address', 'like', '%' . $keyword . '%');
+                })
+                ->orWhere('order_date', 'like', '%' . $keyword . '%');
         })
         ->paginate(5);
-        return view('pages.order.index', ['orders' => $orders, 'keyword' => $keyword]);
-    }
+    return view('pages.order.index', ['orders' => $orders, 'keyword' => $keyword]);
+}
 
     /**
      * Display the specified resource.
@@ -112,9 +113,12 @@ public function updatePaymentStatus(Request $request, Order $order)
 
         $orders = $orders->get();
 
+        // Generate filename based on start date and end date
+        $filename = 'Order_List_' . ($startDate ? $startDate->format('Ymd') : 'all') . '_' . ($endDate ? $endDate->format('Ymd') : 'all') . '.xlsx';
+
         $ordersExport = new OrdersExport($orders);
 
-        return Excel::download($ordersExport, 'orders.xlsx');
+        return Excel::download($ordersExport, $filename);
     }
 
     protected $pdf;
@@ -132,6 +136,9 @@ public function updatePaymentStatus(Request $request, Order $order)
 
         $pdf = $this->pdf->loadView('pdforder', $data);
 
-        return $pdf->download('order_' . $order->id . '.pdf');
+        // Generate filename with the desired format
+        $filename = 'Order_Detail_' . $order->id . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

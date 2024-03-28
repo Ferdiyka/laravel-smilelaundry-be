@@ -68,10 +68,13 @@
                                             <th>Address</th>
                                             <th>Note Address</th>
                                             <th>Jasa</th>
+                                            <th>Price</th>
                                             <th>Jumlah</th>
+                                            <th>Sub Total</th>
+                                            <th>Total</th>
+                                            <th>Order Date</th>
                                             <th>Order Status</th>
                                             <th>Payment Status</th>
-                                            <th>Order Date</th>
                                             <th>Action</th>
                                         </tr>
                                         @if ($orders !== null)
@@ -88,7 +91,11 @@
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 {{ $order->user->note_address }}</td>
                                                         @endif
+                                                        @php
+                                                            $totalSubtotal = 0;
+                                                        @endphp
                                                         <td>{{ $item->product->name }}</td>
+                                                        <td>{{ number_format($item->product->price, 0, ',', '.') }}</td>
                                                         <td>
                                                             @if (in_array($item->product->name, ['Reguler', 'Express']))
                                                                 {{ $item->quantity }} Kg
@@ -96,7 +103,18 @@
                                                                 {{ $item->quantity }}
                                                             @endif
                                                         </td>
+                                                        <td>
+                                                            {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}
+                                                        </td>
                                                         @if ($key == 0)
+                                                            @php
+                                                                $totalSubtotal +=
+                                                                    $item->product->price * $item->quantity;
+                                                            @endphp
+                                                            <td rowspan="{{ count($order->orderDetails) }}">
+                                                                {{ number_format($totalSubtotal, 0, ',', '.') }}</td>
+                                                            <td rowspan="{{ count($order->orderDetails) }}">
+                                                                {{ $order->order_date }}</td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 <a href="#" data-toggle="modal"
                                                                     data-target="#orderStatusModal-{{ $order->id }}">{{ $order->order_status }}</a>
@@ -105,8 +123,6 @@
                                                                 <a href="#" data-toggle="modal"
                                                                     data-target="#paymentStatusModal-{{ $order->id }}">{{ $order->payment_status }}</a>
                                                             </td>
-                                                            <td rowspan="{{ count($order->orderDetails) }}">
-                                                                {{ $order->order_date }}</td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 <div class="d-flex justify-content-center">
                                                                     <a href='{{ route('order.edit', $order->id) }}'

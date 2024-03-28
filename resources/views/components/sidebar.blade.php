@@ -8,10 +8,6 @@
         </div>
         <ul class="sidebar-menu">
             <li class="nav-item dropdown ">
-                <a href="{{ route('home') }}" class="nav-link"><i class="fas fa-fire"></i><span>Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item dropdown ">
                 <a href="{{ route('user.index') }}" class="nav-link"><i class="far fa-user"></i><span>Users</span>
                 </a>
             </li>

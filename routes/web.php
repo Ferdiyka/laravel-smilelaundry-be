@@ -21,12 +21,8 @@ Route::get('/', function () {
     return view('pages.auth.login');
 });
 
-Route::middleware([
-    'auth',
-])->group(function () {
-    Route::get('home', function () {
-        return view('pages.dashboard');
-    })->name('home');
+Route::middleware(['auth'])->group(function () {
+    Route::get('home', [UserController::class, 'index'])->name('home');
     Route::middleware([
         'is_admin',
     ])->group(function () {
