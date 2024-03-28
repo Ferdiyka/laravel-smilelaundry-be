@@ -29,9 +29,23 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="float-left">
-                                    <a href="{{ route('orders.export') }}" class="btn btn-success">
-                                        <i class="fas fa-download"></i> Download Excel
-                                    </a>
+                                    <form method="GET" action="{{ route('orders.export') }}" class="form-inline">
+                                        <div class="form-group mr-2">
+                                            <label for="start_date" class="mr-1">Start Date:</label>
+                                            <input type="date" class="form-control" id="start_date" name="start_date"
+                                                required value="{{ request()->get('start_date') }}">
+                                        </div>
+                                        <div class="form-group mr-2">
+                                            <label for="end_date" class="mr-1">End Date:</label>
+                                            <input type="date" class="form-control" id="end_date" name="end_date"
+                                                required value="{{ request()->get('end_date') }}">
+                                        </div>
+                                        <div class="form-group mr-2">
+                                            <button type="submit" class="btn btn-primary mr-1">
+                                                <i class="fas fa-download"></i> Excel
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                                 <div class="float-right">
                                     <form method="GET" action="{{ route('order.index') }}">
@@ -44,7 +58,7 @@
                                     </form>
                                 </div>
 
-                                <div class="clearfix mb-3"></div>
+                                <div class="clearfix mb-4"></div>
 
                                 <div class="table-responsive">
                                     <table class="table-bordered table">
@@ -111,6 +125,12 @@
                                                                             <i class="fas fa-times"></i>
                                                                         </button>
                                                                     </form>
+
+                                                                    <a href="{{ route('order.downloadPDF', $order->id) }}"
+                                                                        class="btn btn-sm btn-primary btn-icon ml-2"
+                                                                        target="_blank">
+                                                                        <i class="fas fa-file-pdf"></i>
+                                                                    </a>
                                                                 </div>
                                                             </td>
                                                         @endif
@@ -131,8 +151,7 @@
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title"
-                                                            style="margin-top: 5px"
+                                                            <h5 class="modal-title" style="margin-top: 5px"
                                                                 id="orderStatusModalLabel-{{ $order->id }}">Update Order
                                                                 Status</h5>
                                                         </div>

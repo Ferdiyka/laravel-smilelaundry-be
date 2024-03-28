@@ -36,5 +36,6 @@ Route::middleware([
     Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
     Route::put('/orders/{order}/update-payment-status', [OrderController::class, 'updatePaymentStatus'])->name('order.updatePaymentStatus');
     Route::get('/orders/export', [OrderController::class, 'exportOrders'])->name('orders.export');
+    Route::get('/orders/{order}/download-pdf', [OrderController::class, 'downloadOrderPDF'])->name('order.downloadPDF');
     });
 });

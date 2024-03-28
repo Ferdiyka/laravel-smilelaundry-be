@@ -8,27 +8,33 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 
 class OrdersExport implements FromCollection, WithHeadings
 {
+    protected $orders;
+
+    public function __construct($orders)
+    {
+        $this->orders = $orders;
+    }
     /**
      * @return \Illuminate\Support\Collection
      */
     public function collection()
-    {
-        return Order::with('user', 'orderDetails.product')->get()->flatMap(function ($order) {
-            return $order->orderDetails->map(function ($orderDetail) use ($order) {
-                return [
-                    'id' => $order->id,
-                    'user_name' => $order->user->name,
-                    'address' => $order->user->address,
-                    'note_address' => $order->user->note_address,
-                    'jasa' => $orderDetail->product->name,
-                    'quantity' => $orderDetail->product->name === 'Reguler' || $orderDetail->product->name === 'Express' ? $orderDetail->quantity . ' Kg' : $orderDetail->quantity,
-                    'order_status' => $order->order_status,
-                    'payment_status' => $order->payment_status,
-                    'order_date' => $order->order_date,
-                ];
-            });
+{
+    return $this->orders->flatMap(function ($order) {
+        return $order->orderDetails->map(function ($orderDetail) use ($order) {
+            return [
+                'id' => $order->id,
+                'user_name' => $order->user->name,
+                'address' => $order->user->address,
+                'note_address' => $order->user->note_address,
+                'jasa' => $orderDetail->product->name,
+                'quantity' => $orderDetail->product->name === 'Reguler' || $orderDetail->product->name === 'Express' ? $orderDetail->quantity . ' Kg' : $orderDetail->quantity,
+                'order_status' => $order->order_status,
+                'payment_status' => $order->payment_status,
+                'order_date' => $order->order_date,
+            ];
         });
-    }
+    });
+}
 
     /**
      * @return array

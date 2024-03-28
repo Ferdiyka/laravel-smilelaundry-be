@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Order;
+use Barryvdh\DomPDF\PDF;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use App\Exports\OrdersExport;
@@ -97,8 +99,39 @@ public function updatePaymentStatus(Request $request, Order $order)
         return redirect()->route('order.index')->with('success', 'Product deleted successfully');
     }
 
-    public function exportOrders()
+    public function exportOrders(Request $request)
     {
-        return Excel::download(new OrdersExport, 'orders.xlsx');
+        $startDate = $request->has('start_date') ? Carbon::parse($request->start_date) : null;
+        $endDate = $request->has('end_date') ? Carbon::parse($request->end_date)->endOfDay() : null;
+
+        $orders = Order::with('user', 'orderDetails');
+
+        if ($startDate && $endDate) {
+            $orders->whereBetween('order_date', [$startDate, $endDate]);
+        }
+
+        $orders = $orders->get();
+
+        $ordersExport = new OrdersExport($orders);
+
+        return Excel::download($ordersExport, 'orders.xlsx');
+    }
+
+    protected $pdf;
+
+    public function __construct(Pdf $pdf)
+    {
+        $this->pdf = $pdf;
+    }
+
+    public function downloadOrderPDF(Order $order)
+    {
+        $data = [
+            'order' => $order,
+        ];
+
+        $pdf = $this->pdf->loadView('pdforder', $data);
+
+        return $pdf->download('order_' . $order->id . '.pdf');
     }
 }
