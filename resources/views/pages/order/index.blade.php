@@ -86,8 +86,11 @@
                                                                 {{ $order->id }}</td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 {{ $order->user->name }}</td>
-                                                            <td rowspan="{{ count($order->orderDetails) }}">
-                                                                {{ $order->user->address }}</td>
+                                                            <td rowspan="{{ count($order->orderDetails) }}"
+                                                                class="truncated-address" data-toggle="tooltip"
+                                                                title="{{ $order->user->address }}">
+                                                                {{ strlen($order->user->address) > 20 ? substr($order->user->address, 0, 20) . '...' : $order->user->address }}
+                                                            </td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 {{ $order->user->note_address }}</td>
                                                         @endif
@@ -97,22 +100,29 @@
                                                         <td>{{ $item->product->name }}</td>
                                                         <td>{{ number_format($item->product->price, 0, ',', '.') }}</td>
                                                         <td>
-                                                            @if (in_array($item->product->name, ['Reguler', 'Express']))
+                                                            @if (in_array($item->product->id, [11, 12]))
                                                                 {{ $item->quantity }} Kg
                                                             @else
-                                                                {{ $item->quantity }}
+                                                                {{ $item->quantity }} Pcs
                                                             @endif
                                                         </td>
                                                         <td>
                                                             {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}
                                                         </td>
                                                         @if ($key == 0)
-                                                            @php
-                                                                $totalSubtotal +=
-                                                                    $item->product->price * $item->quantity;
-                                                            @endphp
-                                                            <td rowspan="{{ count($order->orderDetails) }}">
-                                                                {{ number_format($totalSubtotal, 0, ',', '.') }}</td>
+                                                            <!-- Calculate and render total for each order only once -->
+                                                            <td rowspan="{{ count($order->orderDetails) }}">{{ number_format(
+                                                                $order->orderDetails->sum(function ($detail) {
+                                                                    return $detail->product->price * $detail->quantity;
+                                                                }),
+                                                                0,
+                                                                ',',
+                                                                '.',
+                                                            ) }}
+                                                            </td>
+                                                        @endif
+
+                                                        @if ($key == 0)
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 {{ $order->order_date }}</td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
@@ -168,7 +178,8 @@
                                                     <div class="modal-content">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title" style="margin-top: 5px"
-                                                                id="orderStatusModalLabel-{{ $order->id }}">Update Order
+                                                                id="orderStatusModalLabel-{{ $order->id }}">Update
+                                                                Order
                                                                 Status</h5>
                                                         </div>
                                                         <div class="modal-body">
@@ -182,6 +193,9 @@
                                                                         <option value="Pending"
                                                                             {{ $order->order_status === 'Pending' ? 'selected' : '' }}>
                                                                             Pending</option>
+                                                                        <option value="Picking Up"
+                                                                            {{ $order->order_status === 'Picking Up' ? 'selected' : '' }}>
+                                                                            Picking Up</option>
                                                                         <option value="Processed"
                                                                             {{ $order->order_status === 'Processed' ? 'selected' : '' }}>
                                                                             Processed</option>

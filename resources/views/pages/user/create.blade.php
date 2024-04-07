@@ -30,7 +30,7 @@
                         <div class="card-body">
                             <div class="form-group">
                                 <label>Name</label>
-                                <input type="text" required
+                                <input type="text"
                                     class="form-control @error('name')
                                 is-invalid
                             @enderror"

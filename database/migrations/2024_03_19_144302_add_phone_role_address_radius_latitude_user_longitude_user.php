@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('phone')->after('email')->nullable();
             $table->string('roles')->after('phone')->nullable();
             $table->text('address')->after('roles')->nullable();
-            $table->integer('radius')->after('address')->nullable();
+            $table->double('radius')->after('address')->nullable();
             $table->double('latitude_user')->after('radius')->nullable();
             $table->double('longitude_user')->after('latitude_user')->nullable();
         });

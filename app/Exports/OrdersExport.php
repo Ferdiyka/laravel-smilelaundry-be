@@ -3,7 +3,9 @@
 namespace App\Exports;
 
 use App\Models\Order;
+use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class OrdersExport implements FromCollection, WithHeadings
@@ -20,39 +22,32 @@ class OrdersExport implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        return $this->orders->flatMap(function ($order) {
-            $totalPrice = 0;
-            return $order->orderDetails->map(function ($orderDetail) use ($order, &$totalPrice) {
-                $price = $orderDetail->product->price;
-                $subtotal = $price * $orderDetail->quantity;
-                $totalPrice += $subtotal;
-                return [
-                    'id' => $order->id,
-                    'user_name' => $order->user->name,
-                    'address' => $order->user->address,
-                    'note_address' => $order->user->note_address,
-                    'jasa' => $orderDetail->product->name,
-                    'quantity' => $orderDetail->product->name === 'Reguler' || $orderDetail->product->name === 'Express' ? $orderDetail->quantity . ' Kg' : $orderDetail->quantity,
-                    'price' => 'Rp ' . number_format($price, 0, ',', '.'),
-                    'subtotal' => 'Rp ' . number_format($subtotal, 0, ',', '.'),
-                    'order_status' => $order->order_status,
-                    'payment_status' => $order->payment_status,
-                    'order_date' => $order->order_date,
+        $data = collect([]);
+
+        foreach ($this->orders as $order) {
+            foreach ($order->orderDetails as $key => $item) {
+                $rowData = [
+                    'Id' => $key === 0 ? $order->id : '',
+                    'User Name' => $key === 0 ? $order->user->name : '',
+                    'Address' => $key === 0 ? $order->user->address : '',
+                    'Note Address' => $key === 0 ? $order->user->note_address : '',
+                    'Order Date' => $key === 0 ? $order->order_date : '',
+                    'Order Status' => $key === 0 ? $order->order_status : '',
+                    'Payment Status' => $key === 0 ? $order->payment_status : '',
+                    'Jasa' => $item->product->name,
+                    'Price' => 'Rp ' . number_format($item->product->price, 0, ',', '.'),
+                    'Jumlah' => in_array($item->product->name, ['Reguler', 'Express']) ? $item->quantity . ' Kg' : $item->quantity,
+                    'Sub Total' => 'Rp ' . number_format($item->product->price * $item->quantity, 0, ',', '.'),
+                    'Total' => $key === 0 ? 'Rp ' . number_format($order->orderDetails->sum(function ($detail) {
+                        return $detail->product->price * $detail->quantity;
+                    }), 0, ',', '.') : '',
                 ];
-            })->push([
-                'id' => '', // empty cell for spacing
-                'user_name' => '',
-                'address' => '',
-                'note_address' => '',
-                'jasa' => '',
-                'quantity' => '',
-                'price' => '',
-                'subtotal' => 'Total : Rp ' . number_format($totalPrice, 0, ',', '.'),
-                'order_status' => '',
-                'payment_status' => '',
-                'order_date' => '',
-            ]);
-        });
+
+                $data->push($rowData);
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -61,17 +56,7 @@ class OrdersExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'Id',
-            'User Name',
-            'Address',
-            'Note Address',
-            'Jasa',
-            'Jumlah',
-            'Price',
-            'Subtotal',
-            'Order Status',
-            'Payment Status',
-            'Order Date',
+            'Id', 'User Name', 'Address', 'Note Address',  'Order Date', 'Order Status', 'Payment Status', 'Jasa', 'Price', 'Jumlah', 'Sub Total', 'Total',
         ];
     }
 }
