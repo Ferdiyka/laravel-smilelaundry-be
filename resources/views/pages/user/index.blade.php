@@ -65,8 +65,8 @@
                                                 <td>
                                                     {{ $user->name }}
                                                 </td>
-                                                <td>
-                                                    {{ $user->address }}
+                                                <td class="truncated-address" data-toggle="tooltip" title="{{ $user->address }}">
+                                                    {{ strlen($user->address) > 20 ? substr($user->address, 0, 20) . '...' : $user->address }}
                                                 </td>
                                                 <td>
                                                     {{ $user->note_address }}
@@ -75,7 +75,7 @@
                                                     {{ $user->phone }}
                                                 </td>
                                                 <td>
-                                                    {{ $user->radius }}
+                                                    {{ number_format($user->radius, 1) }} Meter
                                                 </td>
                                                 <td>
                                                     {{ $user->latitude_user }}
@@ -91,7 +91,7 @@
                                                         </a>
 
                                                         <form action="{{ route('user.destroy', $user->id) }}"
-                                                            method="POST" class="ml-2">
+                                                            method="POST" class="ml-2" onsubmit="return confirmDelete()">
                                                             <input type="hidden" name="_method" value="DELETE" />
                                                             <input type="hidden" name="_token"
                                                                 value="{{ csrf_token() }}" />
@@ -118,6 +118,15 @@
         </section>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        // Fungsi untuk menampilkan pesan konfirmasi sebelum menghapus
+        function confirmDelete() {
+            return confirm('Are you sure you want to delete this item?');
+        }
+    </script>
+@endpush
 
 @push('scripts')
     <!-- JS Libraies -->

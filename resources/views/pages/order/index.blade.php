@@ -13,7 +13,7 @@
             <div class="section-header">
                 <h1>Order</h1>
                 <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item active">Order</div>
+                    <div class="breadcrumb-item active">Orders / Order</div>
                 </div>
             </div>
             <div class="section-body">
@@ -28,25 +28,6 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class="float-left">
-                                    <form method="GET" action="{{ route('orders.export') }}" class="form-inline">
-                                        <div class="form-group mr-2">
-                                            <label for="start_date" class="mr-1">Start Date:</label>
-                                            <input type="date" class="form-control" id="start_date" name="start_date"
-                                                required value="{{ request()->get('start_date') }}">
-                                        </div>
-                                        <div class="form-group mr-2">
-                                            <label for="end_date" class="mr-1">End Date:</label>
-                                            <input type="date" class="form-control" id="end_date" name="end_date"
-                                                required value="{{ request()->get('end_date') }}">
-                                        </div>
-                                        <div class="form-group mr-2">
-                                            <button type="submit" class="btn btn-primary mr-1">
-                                                <i class="fas fa-download"></i> Excel
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
                                 <div class="float-right">
                                     <form method="GET" action="{{ route('order.index') }}">
                                         <div class="input-group">
@@ -61,17 +42,14 @@
                                 <div class="clearfix mb-4"></div>
 
                                 <div class="table-responsive">
-                                    <table class="table-bordered table">
+                                    <table class="table table-bordered">
                                         <tr>
                                             <th>Id</th>
                                             <th>User Name</th>
                                             <th>Address</th>
                                             <th>Note Address</th>
                                             <th>Jasa</th>
-                                            <th>Price</th>
                                             <th>Jumlah</th>
-                                            <th>Sub Total</th>
-                                            <th>Total</th>
                                             <th>Order Date</th>
                                             <th>Order Status</th>
                                             <th>Payment Status</th>
@@ -98,29 +76,15 @@
                                                             $totalSubtotal = 0;
                                                         @endphp
                                                         <td>{{ $item->product->name }}</td>
-                                                        <td>{{ number_format($item->product->price, 0, ',', '.') }}</td>
                                                         <td>
-                                                            @if (in_array($item->product->id, [11, 12]))
-                                                                {{ $item->quantity }} Kg
+                                                            @if (in_array($item->product->id, [11, 12]) && $order->order_status === 'Pending')
+                                                                <strong class="truncated-address" data-toggle="tooltip"
+                                                                    title="Anda harus mengupdate beratnya">? Kg</strong>
                                                             @else
-                                                                {{ $item->quantity }} Pcs
+                                                                {{ $item->quantity }}
+                                                                {{ in_array($item->product->id, [11, 12]) ? 'Kg' : 'Pcs' }}
                                                             @endif
                                                         </td>
-                                                        <td>
-                                                            {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}
-                                                        </td>
-                                                        @if ($key == 0)
-                                                            <!-- Calculate and render total for each order only once -->
-                                                            <td rowspan="{{ count($order->orderDetails) }}">{{ number_format(
-                                                                $order->orderDetails->sum(function ($detail) {
-                                                                    return $detail->product->price * $detail->quantity;
-                                                                }),
-                                                                0,
-                                                                ',',
-                                                                '.',
-                                                            ) }}
-                                                            </td>
-                                                        @endif
 
                                                         @if ($key == 0)
                                                             <td rowspan="{{ count($order->orderDetails) }}">
@@ -141,7 +105,8 @@
                                                                     </a>
 
                                                                     <form action="{{ route('order.destroy', $order->id) }}"
-                                                                        method="POST" class="ml-2">
+                                                                        method="POST" class="ml-2"
+                                                                        onsubmit="return confirmDelete()">
                                                                         <input type="hidden" name="_method"
                                                                             value="DELETE" />
                                                                         <input type="hidden" name="_token"
@@ -151,12 +116,6 @@
                                                                             <i class="fas fa-times"></i>
                                                                         </button>
                                                                     </form>
-
-                                                                    <a href="{{ route('order.downloadPDF', $order->id) }}"
-                                                                        class="btn btn-sm btn-primary btn-icon ml-2"
-                                                                        target="_blank">
-                                                                        <i class="fas fa-file-pdf"></i>
-                                                                    </a>
                                                                 </div>
                                                             </td>
                                                         @endif
@@ -196,12 +155,12 @@
                                                                         <option value="Picking Up"
                                                                             {{ $order->order_status === 'Picking Up' ? 'selected' : '' }}>
                                                                             Picking Up</option>
-                                                                        <option value="Processed"
-                                                                            {{ $order->order_status === 'Processed' ? 'selected' : '' }}>
-                                                                            Processed</option>
-                                                                        <option value="Shipped"
-                                                                            {{ $order->order_status === 'Shipped' ? 'selected' : '' }}>
-                                                                            Shipped</option>
+                                                                        <option value="Processing"
+                                                                            {{ $order->order_status === 'Processing' ? 'selected' : '' }}>
+                                                                            Processing</option>
+                                                                        <option value="Shipping"
+                                                                            {{ $order->order_status === 'Shipping' ? 'selected' : '' }}>
+                                                                            Shipping</option>
                                                                         <option value="Delivered"
                                                                             {{ $order->order_status === 'Delivered' ? 'selected' : '' }}>
                                                                             Delivered</option>
@@ -248,6 +207,9 @@
                                                                         <option value="Paid"
                                                                             {{ $order->payment_status === 'Paid' ? 'selected' : '' }}>
                                                                             Paid</option>
+                                                                        <option value="Unpaid"
+                                                                            {{ $order->payment_status === 'Unpaid' ? 'selected' : '' }}>
+                                                                            Unpaid</option>
                                                                     </select>
                                                                 </div>
                                                                 <div class="modal-footer">
@@ -275,6 +237,15 @@
         </section>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        // Fungsi untuk menampilkan pesan konfirmasi sebelum menghapus
+        function confirmDelete() {
+            return confirm('Are you sure you want to delete this item?');
+        }
+    </script>
+@endpush
 
 @push('scripts')
     <!-- JS Libraies -->

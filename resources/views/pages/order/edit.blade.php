@@ -44,10 +44,14 @@
                                 <select class="form-control" id="orderStatus" name="order_status">
                                     <option value="Pending" {{ $order->order_status === 'Pending' ? 'selected' : '' }}>
                                         Pending</option>
-                                    <option value="Processed" {{ $order->order_status === 'Processed' ? 'selected' : '' }}>
-                                        Processed</option>
-                                    <option value="Shipped" {{ $order->order_status === 'Shipped' ? 'selected' : '' }}>
-                                        Shipped</option>
+                                    <option value="Picking Up"
+                                        {{ $order->order_status === 'Picking Up' ? 'selected' : '' }}>
+                                        Picking Up</option>
+                                    <option value="Processing"
+                                        {{ $order->order_status === 'Processing' ? 'selected' : '' }}>
+                                        Processing</option>
+                                    <option value="Shipping" {{ $order->order_status === 'Shipping' ? 'selected' : '' }}>
+                                        Shipping</option>
                                     <option value="Delivered" {{ $order->order_status === 'Delivered' ? 'selected' : '' }}>
                                         Delivered</option>
                                 </select>
@@ -59,6 +63,8 @@
                                         Pending</option>
                                     <option value="Paid" {{ $order->payment_status === 'Paid' ? 'selected' : '' }}>
                                         Paid</option>
+                                    <option value="Unpaid" {{ $order->payment_status === 'Unpaid' ? 'selected' : '' }}>
+                                        Unpaid</option>
                                 </select>
                             </div>
                         </div>

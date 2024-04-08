@@ -9,30 +9,30 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
-    {
-        // Validate the request...
-        $validated = $request->validate([
-            'name' => 'required|max:50',
-            'email' => 'required|unique:users|max:50',
-            'password' => 'required',
-        ]);
+    // public function register(Request $request)
+    // {
+    //     // Validate the request...
+    //     $validated = $request->validate([
+    //         'name' => 'required|max:50',
+    //         'email' => 'required|unique:users|max:50',
+    //         'password' => 'required',
+    //     ]);
 
-        // Tambahkan default 'USER' ke roles
-        $validated['roles'] = 'USER';
+    //     // Tambahkan default 'USER' ke roles
+    //     $validated['roles'] = 'USER';
 
-        //password encryption
-        $validated['password'] = Hash::make($validated['password']);
+    //     //password encryption
+    //     $validated['password'] = Hash::make($validated['password']);
 
-        $user = User::create($validated);
+    //     $user = User::create($validated);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+    //     $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'access_token' => $token,
-            'user' => $user,
-        ], 201);
-    }
+    //     return response()->json([
+    //         'access_token' => $token,
+    //         'user' => $user,
+    //     ], 201);
+    // }
 
     public function logout(Request $request)
     {

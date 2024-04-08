@@ -1,4 +1,4 @@
-@extends('layouts.auth')
+{{-- @extends('layouts.auth')
 
 @section('title', 'Register CBT')
 
@@ -99,4 +99,4 @@
 
     <!-- Page Specific JS File -->
     <script src="{{ asset('js/page/auth-register.js') }}"></script>
-@endpush
+@endpush --}}

@@ -24,7 +24,8 @@ class OrderController extends Controller
                         ->orWhere('address', 'like', '%' . $keyword . '%')
                         ->orWhere('note_address', 'like', '%' . $keyword . '%');
                 })
-                ->orWhere('order_date', 'like', '%' . $keyword . '%');
+                ->orWhere('order_date', 'like', '%' . $keyword . '%')
+                ->orWhere('order_status', 'like', '%' . $keyword . '%');
         })
         ->paginate(5);
     return view('pages.order.index', ['orders' => $orders, 'keyword' => $keyword]);
@@ -42,6 +43,25 @@ class OrderController extends Controller
     {
         $order = Order::findOrFail($id);
         return view('pages.order.edit', compact('order'));
+    }
+
+    public function detail(Request $request)
+    {
+        $keyword = $request->input('keyword');
+    //get orders with pagination
+    $orders = Order::with('user')
+        ->where(function ($query) use ($keyword) {
+            $query
+                ->orWhereHas('user', function ($query) use ($keyword) {
+                    $query->where('name', 'like', '%' . $keyword . '%')
+                        ->orWhere('address', 'like', '%' . $keyword . '%')
+                        ->orWhere('note_address', 'like', '%' . $keyword . '%');
+                })
+                ->orWhere('order_date', 'like', '%' . $keyword . '%')
+                ->orWhere('order_status', 'like', '%' . $keyword . '%');
+        })
+        ->paginate(5);
+    return view('pages.order.detail', ['orders' => $orders, 'keyword' => $keyword]);
     }
 
     public function update(Request $request, $id)
