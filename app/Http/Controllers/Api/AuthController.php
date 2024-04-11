@@ -5,34 +5,44 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    // public function register(Request $request)
-    // {
-    //     // Validate the request...
-    //     $validated = $request->validate([
-    //         'name' => 'required|max:50',
-    //         'email' => 'required|unique:users|max:50',
-    //         'password' => 'required',
-    //     ]);
+    public function register(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required|max:55',
+                'email' => 'email|required|unique:users',
+                'password' => 'required'
+            ]);
 
-    //     // Tambahkan default 'USER' ke roles
-    //     $validated['roles'] = 'USER';
+            $user = User::create([
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'password' => Hash::make($validatedData['password']),
+                'roles' => 'USER'
+            ]);
 
-    //     //password encryption
-    //     $validated['password'] = Hash::make($validated['password']);
+            $token = $user->createToken('auth_token')->plainTextToken;
+            return response()->json([
+                'access_token' => $token,
+                'user' => UserResource::make($user),
+            ]);
+        } catch (ValidationException $e) {
+            // Handle validation errors
+            $errorMessage = 'The given data was invalid.';
+            if ($e->errors()['email'][0] === 'The email has already been taken.') {
+                $errorMessage = 'Email already exists.';
+            }
 
-    //     $user = User::create($validated);
+            return response($errorMessage, 422);
+        }
+    }
 
-    //     $token = $user->createToken('auth_token')->plainTextToken;
-
-    //     return response()->json([
-    //         'access_token' => $token,
-    //         'user' => $user,
-    //     ], 201);
-    // }
 
     public function logout(Request $request)
     {
@@ -56,16 +66,12 @@ class AuthController extends Controller
 
         //cek user nya ada ato ga
         if (!$user) {
-            return response()->json([
-                'message' => 'User not found'
-            ], 401);
+            return response('User not found', 401);
         }
 
         //cek password nya bener ato ga
         if (!Hash::check($validated['password'], $user->password)) {
-            return response()->json([
-                'message' => 'Invalid password'
-            ], 401);
+            return response('Wrong Password', 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -73,6 +79,23 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'user' => $user,
+        ], 200);
+    }
+
+    //update fcm id
+    public function updateFcmId(Request $request)
+    {
+        // Validate the request...
+        $validated = $request->validate([
+            'fcm_id' => 'required',
+        ]);
+
+        $user = $request->user();
+        $user->fcm_id = $validated['fcm_id'];
+        $user->save();
+
+        return response()->json([
+            'message' => 'FCM ID updated',
         ], 200);
     }
 

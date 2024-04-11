@@ -23,20 +23,6 @@ class OrderController extends Controller
 
         $productQuantities = collect($request->items)->groupBy('product_id')->map->sum('quantity');
 
-        // Check if product_id 1 is ordered more than once
-        if ($productQuantities->get(11, 0) > 1) {
-            throw ValidationException::withMessages([
-                'items' => 'You cannot order product Paket Reguler more than once.',
-            ]);
-        }
-
-        // Check if product_id 2 is ordered more than once
-        if ($productQuantities->get(12, 0) > 1) {
-            throw ValidationException::withMessages([
-                'items' => 'You cannot order product Paket Express more than once.',
-            ]);
-        }
-
         // Create order
         $order = Order::create([
             'user_id' => $request->user()->id,
@@ -59,5 +45,48 @@ class OrderController extends Controller
             'message' => 'Order created successfully',
             'order' => $order,
         ]);
+
     }
+    // function for get all order by user
+    public function getOrderByUser(Request $request)
+    {
+        // Mengambil semua order detail yang terhubung dengan pesanan milik user yang sedang login
+        $orderDetails = OrderDetail::with('product')
+                                    ->whereHas('order', function($query) use ($request) {
+                                        $query->where('user_id', $request->user()->id);
+                                    })
+                                    ->get();
+
+        // Mengelompokkan order detail berdasarkan order_id
+        $groupedOrderDetails = $orderDetails->groupBy('order_id');
+
+        // Mengumpulkan data pesanan beserta informasi produk yang dipesan
+        $ordersWithProducts = [];
+        foreach ($groupedOrderDetails as $orderId => $orderDetails) {
+            $order = Order::find($orderId);
+            $products = $orderDetails->map(function ($detail) {
+                return [
+                    'id' => $detail->product->id,
+                    'name' => $detail->product->name,
+                    'price' => $detail->product->price,
+                    'quantity' => $detail->quantity,
+                ];
+            });
+
+            $ordersWithProducts[] = [
+                'order' => $order,
+                'products' => $products,
+            ];
+        }
+
+        // Mengurutkan data pesanan dari yang terbaru hingga yang terlama
+        $ordersWithProducts = collect($ordersWithProducts)->sortByDesc(function ($order) {
+            return $order['order']->created_at; // Ubah 'created_at' sesuai dengan nama kolom tanggal pesanan
+        })->values()->all();
+
+        return response()->json([
+            'orders' => $ordersWithProducts,
+        ]);
+    }
+
 }

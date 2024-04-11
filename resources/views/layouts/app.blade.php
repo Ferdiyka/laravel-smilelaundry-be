@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
         name="viewport">
-    <title>Smile Laundry LMS</title>
+    <title>Smile Laundry Admin</title>
+
+     <!-- Favicon -->
+     <link rel="icon" type="image/png" href="{{ asset('Logo.png') }}">
 
     <!-- General CSS Files -->
     <link rel="stylesheet"

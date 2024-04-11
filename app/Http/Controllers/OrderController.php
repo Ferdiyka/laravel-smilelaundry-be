@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Order;
 use Barryvdh\DomPDF\PDF;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use App\Exports\OrdersExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 
 class OrderController extends Controller
 {
@@ -27,6 +30,7 @@ class OrderController extends Controller
                 ->orWhere('order_date', 'like', '%' . $keyword . '%')
                 ->orWhere('order_status', 'like', '%' . $keyword . '%');
         })
+        ->orderBy('created_at', 'desc') // Menyortir berdasarkan order_date secara descending
         ->paginate(5);
     return view('pages.order.index', ['orders' => $orders, 'keyword' => $keyword]);
 }
@@ -84,6 +88,22 @@ class OrderController extends Controller
         'payment_status' => $request->input('payment_status'),
     ]);
 
+    if ($request->input('order_status') == 'Picking Up') {
+    // Get the user ID from the order
+    $userId = $order->first()->user_id;
+    // Send notification to the user
+    $this->sendNotificationToUser($userId, 'Kami sedang menjemput Laundrymu');
+    } elseif ($request->input('order_status') == 'Processing') {
+        $userId = $order->first()->user_id;
+        $this->sendNotificationToUser($userId, 'Kami sedang mencuci Laundrymu');
+    } elseif ($request->input('order_status') == 'Shipping') {
+        $userId = $order->first()->user_id;
+        $this->sendNotificationToUser($userId, 'Kami sedang mengantar Laundrymu');
+    } elseif ($request->input('order_status') == 'Delivered') {
+        $userId = $order->first()->user_id;
+        $this->sendNotificationToUser($userId, 'Laundrymu telah sampai!');
+    }
+
     // Mengupdate quantity produk
     foreach ($request->input('order_detail') as $item) {
         $orderDetail = OrderDetail::findOrFail($item['id']);
@@ -94,15 +114,33 @@ class OrderController extends Controller
     return redirect()->route('order.index')->with('success', 'Order updated successfully');
 }
 
+//ini untuk update yg pop up
 public function updateStatus(Request $request, Order $order)
 {
     $order->update([
         'order_status' => $request->input('order_status'),
     ]);
 
+    if ($request->input('order_status') == 'Picking Up') {
+        // Get the user ID from the order
+        $userId = $order->first()->user_id;
+        // Send notification to the user
+        $this->sendNotificationToUser($userId, 'Kami sedang menjemput Laundrymu');
+        } elseif ($request->input('order_status') == 'Processing') {
+            $userId = $order->first()->user_id;
+            $this->sendNotificationToUser($userId, 'Kami sedang mencuci Laundrymu');
+        } elseif ($request->input('order_status') == 'Shipping') {
+            $userId = $order->first()->user_id;
+            $this->sendNotificationToUser($userId, 'Kami sedang mengantar Laundrymu');
+        } elseif ($request->input('order_status') == 'Delivered') {
+            $userId = $order->first()->user_id;
+            $this->sendNotificationToUser($userId, 'Laundrymu telah sampai!');
+        }
+
     return redirect()->route('order.index')->with('success', 'Order status updated successfully.');
 }
 
+//ini untuk update yg pop up
 public function updatePaymentStatus(Request $request, Order $order)
 {
     $order->update([
@@ -111,6 +149,23 @@ public function updatePaymentStatus(Request $request, Order $order)
 
     return redirect()->route('order.index')->with('success', 'Payment status updated successfully.');
 }
+
+public function sendNotificationToUser($userId, $message)
+    {
+        // Dapatkan FCM token user dari tabel 'users'
+
+        $user = User::find($userId);
+        $token = $user->fcm_id;
+
+        // Kirim notifikasi ke perangkat Android
+        $messaging = app('firebase.messaging');
+        $notification = Notification::create('Status Order', $message);
+
+        $message = CloudMessage::withTarget('token', $token)
+            ->withNotification($notification);
+
+        $messaging->send($message);
+    }
 
     public function destroy($id)
     {

@@ -28,6 +28,7 @@ class User extends Authenticatable
         'radius',
         'latitude_user',
         'longitude_user',
+        'fcm_id',
     ];
 
     /**

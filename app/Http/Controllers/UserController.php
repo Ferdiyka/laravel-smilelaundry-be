@@ -27,21 +27,6 @@ class UserController extends Controller
         return view('pages.user.index', ['users' => $users, 'keyword' => $keyword]);
     }
 
-    //create
-    public function create()
-    {
-        return view('pages.user.create');
-    }
-
-    //store
-    public function store(Request $request)
-    {
-        $data = $request->all();
-        $data['password'] = Hash::make($request->input('password'));
-        User::create($data);
-        return redirect()->route('user.index');
-    }
-
     //show
     public function show($id)
     {

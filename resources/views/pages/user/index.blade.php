@@ -28,11 +28,6 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class="float-left">
-                                    <div class="section-header-button">
-                                        <a href="{{ route('user.create') }}" class="btn btn-primary">Add New</a>
-                                    </div>
-                                </div>
                                 <div class="float-right">
                                     <form method="GET" action="{{ route('user.index') }}">
                                         <div class="input-group">

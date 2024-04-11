@@ -36,3 +36,7 @@ Route::apiResource('/users', UserController::class)->middleware('auth:sanctum');
 Route::post('/users/update', [UserController::class, 'updateAddress'])->middleware('auth:sanctum');
 //order
 Route::post('/order', [OrderController::class, 'order'])->middleware('auth:sanctum');
+//udpate fcm id
+Route::post('/update-fcm', [AuthController::class, 'updateFcmId'])->middleware('auth:sanctum');
+//get order by user
+Route::get('/orders', [OrderController::class, 'getOrderByUser'])->middleware('auth:sanctum');
