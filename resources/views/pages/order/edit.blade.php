@@ -29,21 +29,13 @@
                         @csrf
                         @method('PUT')
                         <div class="card-body">
-                            @foreach ($order->orderDetails as $item)
-                                <div class="form-group">
-                                    <input type="hidden" name="order_detail[{{ $item->id }}][id]"
-                                        value="{{ $item->id }}">
-                                    <label>Product: {{ $item->product->name }}</label>
-                                    <input type="number" class="form-control"
-                                        name="order_detail[{{ $item->id }}][quantity]" required
-                                        value="{{ $item->quantity }}">
-                                </div>
-                            @endforeach
+
                             <div class="form-group">
                                 <label>Order Status</label>
                                 <select class="form-control" id="orderStatus" name="order_status">
-                                    <option value="Pending" {{ $order->order_status === 'Pending' ? 'selected' : '' }}>
-                                        Pending</option>
+                                    <option value="Menunggu Konfirmasi"
+                                        {{ $order->order_status === 'Menunggu Konfirmasi' ? 'selected' : '' }}>
+                                        Menunggu Konfirmasi</option>
                                     <option value="Picking Up"
                                         {{ $order->order_status === 'Picking Up' ? 'selected' : '' }}>
                                         Picking Up</option>
@@ -56,6 +48,7 @@
                                         Delivered</option>
                                 </select>
                             </div>
+
                             <div class="form-group">
                                 <label>Payment Status</label>
                                 <select class="form-control" id="paymentStatus" name="payment_status">
@@ -67,8 +60,56 @@
                                         Unpaid</option>
                                 </select>
                             </div>
+                            {{-- Input Field Quantity --}}
+                            <div class="form-group" id="quantitySection">
+                                @foreach ($order->orderDetails as $item)
+                                    <div class="form-group">
+                                        <input type="hidden" name="order_detail[{{ $item->id }}][id]"
+                                            value="{{ $item->id }}">
+                                        <label>Product: {{ $item->product->name }}</label>
+                                        <input type="number" class="form-control"
+                                            name="order_detail[{{ $item->id }}][quantity]" required
+                                            value="{{ $item->quantity }}">
+                                    </div>
+                                @endforeach
+                            </div>
+                            @push('scripts')
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        var orderStatusDropdown = document.getElementById('orderStatus');
+                                        var quantitySection = document.getElementById('quantitySection');
+
+                                        // Sembunyikan Input Field Quantity secara default
+                                        quantitySection.style.display = 'none';
+
+                                        // Tambahkan fungsi untuk menampilkan Input Field Quantity berdasarkan status pesanan
+                                        function showHideQuantityField() {
+                                            var selectedStatus = orderStatusDropdown.value;
+
+                                            // Jika status adalah 'Menunggu Konfirmasi' atau 'Picking Up', sembunyikan Input Field Quantity
+                                            if (selectedStatus === 'Menunggu Konfirmasi' || selectedStatus === 'Picking Up') {
+                                                quantitySection.style.display = 'none';
+                                            } else {
+                                                // Jika status bukan 'Menunggu Konfirmasi' atau 'Picking Up', tampilkan Input Field Quantity
+                                                quantitySection.style.display = 'block';
+                                            }
+                                        }
+
+                                        // Panggil fungsi untuk menampilkan Input Field Quantity saat halaman dimuat
+                                        showHideQuantityField();
+
+                                        // Tambahkan event listener untuk mendengarkan perubahan pada dropdown
+                                        orderStatusDropdown.addEventListener('change', function() {
+                                            // Panggil kembali fungsi untuk menampilkan Input Field Quantity saat dropdown berubah
+                                            showHideQuantityField();
+                                        });
+                                    });
+                                </script>
+                            @endpush
+
                         </div>
                         <div class="card-footer text-right">
+                            <a href="{{ route('order.index') }}" class="btn btn-secondary mr-2">Cancel</a>
                             <button class="btn btn-primary">Submit</button>
                         </div>
                     </form>

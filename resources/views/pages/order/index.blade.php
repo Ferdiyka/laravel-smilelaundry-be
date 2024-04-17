@@ -77,7 +77,9 @@
                                                         @endphp
                                                         <td>{{ $item->product->name }}</td>
                                                         <td>
-                                                            @if (in_array($item->product->id, [11, 12]) && $order->order_status === 'Pending')
+                                                            @if (
+                                                                (in_array($item->product->id, [11, 12]) && $order->order_status === 'Menunggu Konfirmasi') ||
+                                                                    $order->order_status === 'Picking Up')
                                                                 <strong class="truncated-address" data-toggle="tooltip"
                                                                     title="Anda harus mengupdate beratnya">? Kg</strong>
                                                             @else
@@ -90,13 +92,9 @@
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 {{ $order->order_date }}</td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
-                                                                <a href="#" data-toggle="modal"
-                                                                    data-target="#orderStatusModal-{{ $order->id }}">{{ $order->order_status }}</a>
-                                                            </td>
+                                                                {{ $order->order_status }}</td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
-                                                                <a href="#" data-toggle="modal"
-                                                                    data-target="#paymentStatusModal-{{ $order->id }}">{{ $order->payment_status }}</a>
-                                                            </td>
+                                                                {{ $order->payment_status }}</td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 <div class="d-flex justify-content-center">
                                                                     <a href='{{ route('order.edit', $order->id) }}'
@@ -149,9 +147,9 @@
                                                                 <div class="form-group">
                                                                     <select class="form-control" id="orderStatus"
                                                                         name="order_status">
-                                                                        <option value="Pending"
-                                                                            {{ $order->order_status === 'Pending' ? 'selected' : '' }}>
-                                                                            Pending</option>
+                                                                        <option value="Menunggu Konfirmasi"
+                                                                            {{ $order->order_status === 'Menunggu Konfirmasi' ? 'selected' : '' }}>
+                                                                            Menunggu Konfirmasi</option>
                                                                         <option value="Picking Up"
                                                                             {{ $order->order_status === 'Picking Up' ? 'selected' : '' }}>
                                                                             Picking Up</option>

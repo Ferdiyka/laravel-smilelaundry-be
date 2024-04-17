@@ -26,7 +26,7 @@ class HomeController extends Controller
     {
         // Retrieve the order statuses from the database or a configuration file
         return [
-            'Pending' => 'Pending',
+            'Menunggu Konfirmasi' => 'Menunggu Konfirmasi',
             'Picking Up' => 'Picking Up',
             'Processing' => 'Processing',
             'Shipping' => 'Shipping',

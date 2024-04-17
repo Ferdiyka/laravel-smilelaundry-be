@@ -15,6 +15,7 @@ use Kreait\Firebase\Messaging\Notification;
 
 class OrderController extends Controller
 {
+    //ini untuk halaman order
     public function index(Request $request)
 {
     $keyword = $request->input('keyword');
@@ -35,6 +36,8 @@ class OrderController extends Controller
     return view('pages.order.index', ['orders' => $orders, 'keyword' => $keyword]);
 }
 
+
+
     /**
      * Display the specified resource.
      */
@@ -49,6 +52,7 @@ class OrderController extends Controller
         return view('pages.order.edit', compact('order'));
     }
 
+    // ini untuk halaman detail order
     public function detail(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -64,6 +68,7 @@ class OrderController extends Controller
                 ->orWhere('order_date', 'like', '%' . $keyword . '%')
                 ->orWhere('order_status', 'like', '%' . $keyword . '%');
         })
+        ->orderBy('created_at', 'desc')
         ->paginate(5);
     return view('pages.order.detail', ['orders' => $orders, 'keyword' => $keyword]);
     }
@@ -90,17 +95,17 @@ class OrderController extends Controller
 
     if ($request->input('order_status') == 'Picking Up') {
     // Get the user ID from the order
-    $userId = $order->first()->user_id;
+    $userId = $order->user_id;
     // Send notification to the user
     $this->sendNotificationToUser($userId, 'Kami sedang menjemput Laundrymu');
     } elseif ($request->input('order_status') == 'Processing') {
-        $userId = $order->first()->user_id;
+        $userId = $order->user_id;
         $this->sendNotificationToUser($userId, 'Kami sedang mencuci Laundrymu');
     } elseif ($request->input('order_status') == 'Shipping') {
-        $userId = $order->first()->user_id;
+        $userId = $order->user_id;
         $this->sendNotificationToUser($userId, 'Kami sedang mengantar Laundrymu');
     } elseif ($request->input('order_status') == 'Delivered') {
-        $userId = $order->first()->user_id;
+        $userId = $order->user_id;
         $this->sendNotificationToUser($userId, 'Laundrymu telah sampai!');
     }
 
@@ -112,42 +117,6 @@ class OrderController extends Controller
 
     // Redirect kembali ke halaman atau route yang diinginkan
     return redirect()->route('order.index')->with('success', 'Order updated successfully');
-}
-
-//ini untuk update yg pop up
-public function updateStatus(Request $request, Order $order)
-{
-    $order->update([
-        'order_status' => $request->input('order_status'),
-    ]);
-
-    if ($request->input('order_status') == 'Picking Up') {
-        // Get the user ID from the order
-        $userId = $order->first()->user_id;
-        // Send notification to the user
-        $this->sendNotificationToUser($userId, 'Kami sedang menjemput Laundrymu');
-        } elseif ($request->input('order_status') == 'Processing') {
-            $userId = $order->first()->user_id;
-            $this->sendNotificationToUser($userId, 'Kami sedang mencuci Laundrymu');
-        } elseif ($request->input('order_status') == 'Shipping') {
-            $userId = $order->first()->user_id;
-            $this->sendNotificationToUser($userId, 'Kami sedang mengantar Laundrymu');
-        } elseif ($request->input('order_status') == 'Delivered') {
-            $userId = $order->first()->user_id;
-            $this->sendNotificationToUser($userId, 'Laundrymu telah sampai!');
-        }
-
-    return redirect()->route('order.index')->with('success', 'Order status updated successfully.');
-}
-
-//ini untuk update yg pop up
-public function updatePaymentStatus(Request $request, Order $order)
-{
-    $order->update([
-        'payment_status' => $request->input('payment_status'),
-    ]);
-
-    return redirect()->route('order.index')->with('success', 'Payment status updated successfully.');
 }
 
 public function sendNotificationToUser($userId, $message)
@@ -169,10 +138,16 @@ public function sendNotificationToUser($userId, $message)
 
     public function destroy($id)
     {
+        // Find the order
         $order = Order::findOrFail($id);
+
+        // Delete all related order details first
+        $order->orderDetails()->delete();
+
+        // Now delete the order itself
         $order->delete();
 
-        return redirect()->route('order.index')->with('success', 'Product deleted successfully');
+        return redirect()->route('order.index')->with('success', 'Order and related details deleted successfully');
     }
 
     public function exportOrders(Request $request)

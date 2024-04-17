@@ -82,12 +82,16 @@ class ProductController extends Controller
         return redirect()->route('product.index')->with('success', 'Product updated successfully');
     }
 
-    //destroy
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
+    $product = Product::findOrFail($id);
 
-        return redirect()->route('product.index')->with('success', 'Product deleted successfully');
+    // Hapus semua order detail terkait produk
+    $product->orderDetails()->delete();
+
+    // Hapus produk itu sendiri
+    $product->delete();
+
+    return redirect()->route('product.index')->with('success', 'Product deleted successfully');
     }
 }

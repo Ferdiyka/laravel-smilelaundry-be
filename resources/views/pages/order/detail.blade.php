@@ -48,7 +48,7 @@
                                     </form>
                                 </div>
                                 <div class="float-right">
-                                    <form method="GET" action="{{ route('order.index') }}">
+                                    <form method="GET" action="{{ route('order.detail') }}">
                                         <div class="input-group">
                                             <input type="text" class="form-control" placeholder="Search" name="keyword">
                                             <div class="input-group-append">
@@ -100,11 +100,12 @@
                                                         <td>{{ $item->product->name }}</td>
                                                         <td>{{ number_format($item->product->price, 0, ',', '.') }}</td>
                                                         <td>
-                                                            @if (in_array($item->product->id, [11, 12]) && $order->order_status === 'Pending')
-                                                                <strong class="truncated-address" data-toggle="tooltip"
-                                                                title="Anda harus mengupdate beratnya">? Kg</strong>
+                                                            @if ((in_array($item->product->id, [11, 12]) && $order->order_status === 'Menunggu Konfirmasi') ||
+                                                            $order->order_status === 'Picking Up')
+                                                            <strong class="truncated-address" data-toggle="tooltip" title="Anda harus mengupdate beratnya">? Kg</strong>
                                                             @else
-                                                                {{ $item->quantity }} {{ in_array($item->product->id, [11, 12]) ? 'Kg' : 'Pcs' }}
+                                                                {{ $item->quantity }}
+                                                                {{ in_array($item->product->id, [11, 12]) ? 'Kg' : 'Pcs' }}
                                                             @endif
                                                         </td>
                                                         <td>
@@ -136,7 +137,8 @@
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 <div class="d-flex justify-content-center">
                                                                     <form action="{{ route('order.destroy', $order->id) }}"
-                                                                        method="POST" class="ml-2" onsubmit="return confirmDelete()">
+                                                                        method="POST" class="ml-2"
+                                                                        onsubmit="return confirmDelete()">
                                                                         <input type="hidden" name="_method"
                                                                             value="DELETE" />
                                                                         <input type="hidden" name="_token"

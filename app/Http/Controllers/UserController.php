@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+use App\Models\Order;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -56,11 +57,26 @@ class UserController extends Controller
         return redirect()->route('user.index');
     }
 
-    //destroy
     public function destroy($id)
     {
+        // Temukan pengguna berdasarkan ID
         $user = User::findOrFail($id);
+
+        // Cari semua pesanan (orders) yang dibuat oleh pengguna ini
+        $orders = Order::where('user_id', $user->id)->get();
+
+        // Hapus semua detail pesanan yang terkait dengan setiap pesanan
+        foreach ($orders as $order) {
+            // Hapus semua detail pesanan terkait
+            $order->orderDetails()->delete();
+            // Hapus pesanan itu sendiri
+            $order->delete();
+        }
+
+        // Sekarang pengguna dapat dihapus karena tidak ada pesanan yang terkait lagi
         $user->delete();
+
+        // Redirect kembali ke halaman daftar pengguna
         return redirect()->route('user.index');
     }
 }

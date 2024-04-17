@@ -27,7 +27,7 @@ class OrderController extends Controller
         $order = Order::create([
             'user_id' => $request->user()->id,
             'order_date' => Carbon::now()->format('Y-m-d'),
-            'order_status' => 'Pending',
+            'order_status' => 'Menunggu Konfirmasi',
             'payment_status' => 'Pending',
         ]);
 
