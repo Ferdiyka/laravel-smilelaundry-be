@@ -77,14 +77,11 @@
                                                         @endphp
                                                         <td>{{ $item->product->name }}</td>
                                                         <td>
-                                                            @if (
-                                                                (in_array($item->product->id, [11, 12]) && $order->order_status === 'Menunggu Konfirmasi') ||
-                                                                    $order->order_status === 'Picking Up')
-                                                                <strong class="truncated-address" data-toggle="tooltip"
-                                                                    title="Anda harus mengupdate beratnya">? Kg</strong>
+                                                            @if ((stripos($item->product->name, 'Paket') !== false) && ($order->order_status === 'Menunggu Konfirmasi' || $order->order_status === 'Picking Up'))
+                                                                <strong class="truncated-address" data-toggle="tooltip" title="Anda harus mengupdate beratnya">? Kg</strong>
                                                             @else
                                                                 {{ $item->quantity }}
-                                                                {{ in_array($item->product->id, [11, 12]) ? 'Kg' : 'Pcs' }}
+                                                                {{ stripos($item->product->name, 'Paket') !== false ? 'Kg' : 'Pcs' }}
                                                             @endif
                                                         </td>
 
@@ -125,7 +122,7 @@
                                             <p>No orders found.</p>
                                         @endif
 
-                                        <!-- Order Status Modal -->
+                                        <!-- Order Status Modal
                                         @foreach ($orders as $order)
                                             <div class="modal fade" id="orderStatusModal-{{ $order->id }}"
                                                 tabindex="-1" role="dialog"
@@ -176,8 +173,9 @@
                                                 </div>
                                             </div>
                                         @endforeach
+                                    -->
 
-                                        <!-- Payment Status Modal -->
+                                        <!-- Payment Status Modal
                                         @foreach ($orders as $order)
                                             <div class="modal fade" id="paymentStatusModal-{{ $order->id }}"
                                                 tabindex="-1" role="dialog"
@@ -221,7 +219,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endforeach
+                                        @endforeach -->
                                     </table>
                                 </div>
                                 <div class="float-right">

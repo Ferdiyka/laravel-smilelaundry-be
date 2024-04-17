@@ -100,12 +100,11 @@
                                                         <td>{{ $item->product->name }}</td>
                                                         <td>{{ number_format($item->product->price, 0, ',', '.') }}</td>
                                                         <td>
-                                                            @if ((in_array($item->product->id, [11, 12]) && $order->order_status === 'Menunggu Konfirmasi') ||
-                                                            $order->order_status === 'Picking Up')
-                                                            <strong class="truncated-address" data-toggle="tooltip" title="Anda harus mengupdate beratnya">? Kg</strong>
+                                                            @if ((stripos($item->product->name, 'Paket') !== false) && ($order->order_status === 'Menunggu Konfirmasi' || $order->order_status === 'Picking Up'))
+                                                                <strong class="truncated-address" data-toggle="tooltip" title="Anda harus mengupdate beratnya">? Kg</strong>
                                                             @else
                                                                 {{ $item->quantity }}
-                                                                {{ in_array($item->product->id, [11, 12]) ? 'Kg' : 'Pcs' }}
+                                                                {{ stripos($item->product->name, 'Paket') !== false ? 'Kg' : 'Pcs' }}
                                                             @endif
                                                         </td>
                                                         <td>
