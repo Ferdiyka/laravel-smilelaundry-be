@@ -24,7 +24,7 @@ class HomeController extends Controller
 
     protected function getOrderStatuses()
     {
-        // Retrieve the order statuses from the database or a configuration file
+        // Retrieve the order statuses from the database or a configuration file untuk label di dashboard
         return [
             'Menunggu Konfirmasi' => 'Menunggu Konfirmasi',
             'Picking Up' => 'Picking Up',
@@ -36,9 +36,8 @@ class HomeController extends Controller
 
     protected function getPaymentStatuses()
     {
-        // Retrieve the payment statuses from the database or a configuration file
+        // Retrieve the payment statuses from the database or a configuration file untuk label di dashboard
         return [
-            'Pending' => 'Pending',
             'Paid' => 'Paid',
             'Unpaid' => 'Unpaid',
         ];

@@ -52,8 +52,6 @@
                             <div class="form-group">
                                 <label>Payment Status</label>
                                 <select class="form-control" id="paymentStatus" name="payment_status">
-                                    <option value="Pending" {{ $order->payment_status === 'Pending' ? 'selected' : '' }}>
-                                        Pending</option>
                                     <option value="Paid" {{ $order->payment_status === 'Paid' ? 'selected' : '' }}>
                                         Paid</option>
                                     <option value="Unpaid" {{ $order->payment_status === 'Unpaid' ? 'selected' : '' }}>

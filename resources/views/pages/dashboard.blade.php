@@ -4,16 +4,11 @@
 
 @push('style')
     <!-- CSS Libraries -->
-    <link rel="stylesheet"
-        href="{{ asset('library/jqvmap/dist/jqvmap.min.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('library/summernote/dist/summernote-bs4.min.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('library/owl.carousel/dist/assets/owl.carousel.min.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('library/owl.carousel/dist/assets/owl.theme.default.min.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('library/flag-icon-css/css/flag-icon.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('library/jqvmap/dist/jqvmap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('library/summernote/dist/summernote-bs4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('library/owl.carousel/dist/assets/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('library/owl.carousel/dist/assets/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('library/flag-icon-css/css/flag-icon.min.css') }}">
 @endpush
 
 @section('main')
@@ -33,7 +28,8 @@
                                     <div class="card-stats-item">
                                         <div class="card-stats-item-label mb-3">{{ $label }}</div>
                                         <div class="card-stats-item-count">
-                                            <a href="{{ route('order.index') }}"> {{ $orders->where('order_status', $status)->count() }} </a>
+                                            <a href="{{ route('order.index') }}">
+                                                {{ $orders->where('order_status', $status)->count() }} </a>
                                         </div>
                                     </div>
                                 @endforeach
@@ -48,12 +44,15 @@
                             </div>
                             <div class="card-stats-items">
                                 @foreach ($paymentStatuses as $status => $label)
+                                    <div class="card-stats-item"></div>
                                     <div class="card-stats-item">
                                         <div class="card-stats-item-label mb-3">{{ $label }}</div>
                                         <div class="card-stats-item-count">
-                                            <a href="{{ route('order.index') }}"> {{ $orders->where('payment_status', $status)->count() }} </a>
+                                            <a href="{{ route('order.index') }}">
+                                                {{ $orders->where('payment_status', $status)->count() }} </a>
                                         </div>
                                     </div>
+                                    <div class="card-stats-item"></div>
                                 @endforeach
                             </div>
                         </div>
