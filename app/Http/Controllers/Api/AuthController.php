@@ -69,11 +69,6 @@ class AuthController extends Controller
             return response('User not found', 401);
         }
 
-        // //cek password nya bener ato ga
-        // if (!Hash::check($validated['password'], $user->password)) {
-        //     return response('Wrong Password', 401);
-        // }
-
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

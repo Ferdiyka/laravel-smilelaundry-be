@@ -135,7 +135,7 @@
                                                             </td>
                                                             <td rowspan="{{ count($order->orderDetails) }}">
                                                                 <div class="d-flex justify-content-center">
-                                                                    <form action="{{ route('order.destroy', $order->id) }}"
+                                                                    <form action="{{ route('order.destroyDetail', $order->id) }}"
                                                                         method="POST" class="ml-2"
                                                                         onsubmit="return confirmDelete()">
                                                                         <input type="hidden" name="_method"

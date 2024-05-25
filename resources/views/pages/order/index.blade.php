@@ -237,6 +237,21 @@
         function confirmDelete() {
             return confirm('Are you sure you want to delete this item?');
         }
+
+        // Fungsi untuk menyegarkan isi tabel dengan AJAX
+        function refreshTableContent() {
+            $.ajax({
+                url: "{{ route('order.index') }}", // Ganti dengan URL yang sesuai untuk mendapatkan data tabel
+                method: "GET",
+                success: function(data) {
+                    // Ganti konten tabel dengan data yang baru
+                    $('.table-responsive').html($(data).find('.table-responsive').html());
+                }
+            });
+        }
+
+        // Panggil fungsi refreshTableContent setiap 3 detik
+        setInterval(refreshTableContent, 3000); // 3000 milidetik = 3 detik
     </script>
 @endpush
 

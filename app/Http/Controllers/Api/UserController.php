@@ -24,32 +24,6 @@ class UserController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        // Validasi data yang diterima dari pengguna
-        $validatedData = $request->validate([
-            'name' => 'required',
-            'phone' => 'required',
-            'address' => 'required',
-            'note_address' => 'nullable',
-            'radius' => 'nullable',
-            'latitude_user' => 'nullable',
-            'longitude_user' => 'nullable',
-        ]);
-
-        // Buat pengguna baru berdasarkan data yang divalidasi
-        $user = User::create($validatedData);
-
-        // Berikan respons yang sesuai
-        return response()->json([
-            'message' => 'User created successfully',
-            'data' => $user
-        ], 201);
-    }
-
     public function updateAddress(Request $request)
     {
         $validatedData = $request->validate([
@@ -69,29 +43,5 @@ class UserController extends Controller
             'message' => 'User address updated successfully',
             'data' => $user
         ], 200);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

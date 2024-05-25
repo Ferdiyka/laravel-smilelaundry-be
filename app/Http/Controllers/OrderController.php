@@ -150,6 +150,20 @@ public function sendNotificationToUser($userId, $message)
         return redirect()->route('order.index')->with('success', 'Order and related details deleted successfully');
     }
 
+    public function destroyDetail($id)
+    {
+        // Find the order
+        $order = Order::findOrFail($id);
+
+        // Delete all related order details first
+        $order->orderDetails()->delete();
+
+        // Now delete the order itself
+        $order->delete();
+
+        return redirect()->route('order.detail')->with('success', 'Order and related details deleted successfully');
+    }
+
     public function exportOrders(Request $request)
     {
         $startDate = $request->has('start_date') ? Carbon::parse($request->start_date) : null;

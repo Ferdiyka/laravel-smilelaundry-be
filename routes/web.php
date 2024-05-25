@@ -22,6 +22,7 @@ Route::middleware([
     Route::resource('user', UserController::class);
     Route::resource('product', ProductController::class);
     Route::resource('order', OrderController::class);
+    Route::delete('/orders/{order}/destroy-detail', [OrderController::class, 'destroyDetail'])->name('order.destroyDetail');
     Route::get('/orders/detail', [OrderController::class, 'detail'])->name('order.detail');
     Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
     Route::put('/orders/{order}/update-payment-status', [OrderController::class, 'updatePaymentStatus'])->name('order.updatePaymentStatus');

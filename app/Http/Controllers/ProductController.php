@@ -84,13 +84,28 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-    $product = Product::findOrFail($id);
+        $product = Product::findOrFail($id);
 
-    // Hapus semua order detail terkait produk
-    $product->orderDetails()->delete();
+        // Get related order details
+        $orderDetails = $product->orderDetails;
 
-    // Hapus produk itu sendiri
-    $product->delete();
+        if ($orderDetails) {
+            foreach ($orderDetails as $orderDetail) {
+                $order = $orderDetail->order;
+
+                // Hapus order detail
+                $orderDetail->delete();
+
+                // Cek apakah ada order tersisa di order details
+                if ($order && $order->orderDetails()->count() === 0) {
+                    // Hapus order jika tidak ada order details yang tersisa
+                    $order->delete();
+                }
+            }
+        }
+
+        // Hapus produknya
+        $product->delete();
 
     return redirect()->route('product.index')->with('success', 'Product deleted successfully');
     }
